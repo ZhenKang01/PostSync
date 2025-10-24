@@ -20,7 +20,7 @@ function App() {
                 <Zap className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">PostSync</h1>
+                <h1 className="text-2xl font-bold text-gray-900">FlowPost</h1>
                 <p className="text-xs text-gray-500">Design once. Post everywhere.</p>
               </div>
             </div>
