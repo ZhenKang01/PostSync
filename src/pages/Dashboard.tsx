@@ -217,14 +217,16 @@ export function Dashboard() {
           </div>
 
           <div className="space-y-4">
-            {['Twitter', 'LinkedIn', 'Facebook', 'Instagram'].map((platform, index) => (
+            {['X', 'LinkedIn', 'Facebook', 'Instagram'].map((platform, index) => (
               <div key={platform} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg ${
-                    index === 0 ? 'bg-sky-100' :
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    index === 0 ? 'bg-black' :
                     index === 1 ? 'bg-blue-100' :
                     index === 2 ? 'bg-blue-100' : 'bg-pink-100'
-                  }`}></div>
+                  }`}>
+                    {platform === 'X' && <img src="/image.png" alt="X" className="w-5 h-5" />}
+                  </div>
                   <span className="font-medium text-gray-900">{platform}</span>
                 </div>
                 <div className="text-right">

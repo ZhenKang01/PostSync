@@ -141,10 +141,12 @@ export function Settings() {
           </div>
 
           <div className="space-y-3">
-            {['Twitter', 'LinkedIn', 'Facebook', 'Instagram'].map((platform) => (
+            {['X', 'LinkedIn', 'Facebook', 'Instagram'].map((platform) => (
               <div key={platform} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white border border-gray-200 rounded-lg"></div>
+                  <div className={`w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center ${platform === 'X' ? 'bg-black' : 'bg-white'}`}>
+                    {platform === 'X' && <img src="/image.png" alt="X" className="w-5 h-5" />}
+                  </div>
                   <span className="font-medium text-gray-900">{platform}</span>
                 </div>
                 <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700">

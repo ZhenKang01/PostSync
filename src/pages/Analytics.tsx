@@ -2,7 +2,7 @@ import { BarChart3, TrendingUp, Users, Eye, Heart, Share2, ArrowUp, ArrowDown } 
 
 export function Analytics() {
   const platforms = [
-    { name: 'Twitter', engagement: 245, reach: 12500, color: 'from-sky-400 to-sky-600', trend: 12 },
+    { name: 'X', engagement: 245, reach: 12500, color: 'from-gray-800 to-black', trend: 12 },
     { name: 'LinkedIn', engagement: 189, reach: 8900, color: 'from-blue-600 to-blue-700', trend: 8 },
     { name: 'Facebook', engagement: 312, reach: 15200, color: 'from-blue-500 to-blue-600', trend: -3 },
     { name: 'Instagram', engagement: 428, reach: 18700, color: 'from-pink-500 to-purple-600', trend: 15 },

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Clock, Send, CheckCircle2, Twitter, Linkedin, Facebook, Instagram } from 'lucide-react';
+import { Calendar, Clock, Send, CheckCircle2, Linkedin, Facebook, Instagram } from 'lucide-react';
 
 interface SchedulePostProps {
   scheduledDate: string;
@@ -19,7 +19,7 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
   const [selectedTime, setSelectedTime] = useState('');
   const [isScheduled, setIsScheduled] = useState(false);
   const [platforms, setPlatforms] = useState<SelectedPlatform[]>([
-    { name: 'Twitter', icon: Twitter, color: 'bg-sky-500', selected: true },
+    { name: 'X', icon: null, color: 'bg-black', selected: true },
     { name: 'LinkedIn', icon: Linkedin, color: 'bg-blue-600', selected: true },
     { name: 'Facebook', icon: Facebook, color: 'bg-blue-500', selected: true },
     { name: 'Instagram', icon: Instagram, color: 'bg-pink-500', selected: true },
@@ -81,7 +81,11 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
                   }`}
                 >
                   <div className={`w-8 h-8 ${platform.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    <Icon className="w-4 h-4 text-white" />
+                    {platform.name === 'X' ? (
+                      <img src="/image.png" alt="X" className="w-4 h-4" />
+                    ) : (
+                      Icon && <Icon className="w-4 h-4 text-white" />
+                    )}
                   </div>
                   <span className="text-sm font-medium text-gray-900">{platform.name}</span>
                   {platform.selected && (
@@ -146,7 +150,11 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
                     const Icon = platform.icon;
                     return (
                       <div key={platform.name} className={`w-6 h-6 ${platform.color} rounded flex items-center justify-center`}>
-                        <Icon className="w-3 h-3 text-white" />
+                        {platform.name === 'X' ? (
+                          <img src="/image.png" alt="X" className="w-3 h-3" />
+                        ) : (
+                          Icon && <Icon className="w-3 h-3 text-white" />
+                        )}
                       </div>
                     );
                   })}
