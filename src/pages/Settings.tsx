@@ -145,7 +145,7 @@ export function Settings() {
               { name: 'X', icon: '/image.png', bg: 'bg-black' },
               { name: 'LinkedIn', icon: '/linkedin-logo.svg', bg: 'bg-white' },
               { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white' },
-              { name: 'Instagram', icon: '/instagram-logo.svg', bg: 'bg-white' },
+              { name: 'Instagram', icon: '/instagram-logo.png', bg: 'bg-white' },
             ].map((platform) => (
               <div key={platform.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">

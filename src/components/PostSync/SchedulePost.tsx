@@ -22,7 +22,7 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
     { name: 'X', icon: '/image.png', color: 'bg-black', selected: true },
     { name: 'LinkedIn', icon: '/linkedin-logo.svg', color: 'bg-blue-600', selected: true },
     { name: 'Facebook', icon: '/facebook-logo.svg', color: 'bg-blue-500', selected: true },
-    { name: 'Instagram', icon: '/instagram-logo.svg', color: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400', selected: true },
+    { name: 'Instagram', icon: '/instagram-logo.png', color: 'bg-white', selected: true },
   ]);
 
   const togglePlatform = (platformName: string) => {

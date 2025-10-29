@@ -221,7 +221,7 @@ export function Dashboard() {
               { name: 'X', icon: '/image.png', bg: 'bg-black' },
               { name: 'LinkedIn', icon: '/linkedin-logo.svg', bg: 'bg-white border border-gray-200' },
               { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white border border-gray-200' },
-              { name: 'Instagram', icon: '/instagram-logo.svg', bg: 'bg-white border border-gray-200' },
+              { name: 'Instagram', icon: '/instagram-logo.png', bg: 'bg-white border border-gray-200' },
             ].map((platform) => (
               <div key={platform.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
