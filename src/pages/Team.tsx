@@ -1,12 +1,7 @@
 import { Users, UserPlus, Crown, Edit, Shield } from 'lucide-react';
 
 export function Team() {
-  const teamMembers = [
-    { name: 'Sarah Johnson', email: 'sarah@company.com', role: 'Admin', avatar: 'SJ', color: 'from-blue-500 to-blue-600' },
-    { name: 'Michael Chen', email: 'michael@company.com', role: 'Editor', avatar: 'MC', color: 'from-green-500 to-green-600' },
-    { name: 'Emily Rodriguez', email: 'emily@company.com', role: 'Editor', avatar: 'ER', color: 'from-purple-500 to-purple-600' },
-    { name: 'David Kim', email: 'david@company.com', role: 'Viewer', avatar: 'DK', color: 'from-orange-500 to-orange-600' },
-  ];
+  const teamMembers: Array<{ name: string; email: string; role: string; avatar: string; color: string }> = [];
 
   const roleInfo = [
     {
@@ -69,39 +64,53 @@ export function Team() {
           <h2 className="text-xl font-bold text-gray-900">Team Members ({teamMembers.length})</h2>
         </div>
 
-        <div className="divide-y divide-gray-200">
-          {teamMembers.map((member) => (
-            <div key={member.email} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${member.color} rounded-xl flex items-center justify-center shadow-lg`}>
-                    <span className="text-white font-bold text-sm">{member.avatar}</span>
+        {teamMembers.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No team members yet</h3>
+            <p className="text-gray-600 mb-6">Invite your first team member to start collaborating</p>
+            <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-lg font-semibold transition-all shadow-lg shadow-blue-500/30">
+              <UserPlus className="w-5 h-5" />
+              Invite Member
+            </button>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {teamMembers.map((member) => (
+              <div key={member.email} className="p-6 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 bg-gradient-to-br ${member.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                      <span className="text-white font-bold text-sm">{member.avatar}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">{member.name}</h3>
+                      <p className="text-sm text-gray-600">{member.email}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-gray-900">{member.name}</h3>
-                    <p className="text-sm text-gray-600">{member.email}</p>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-4">
-                  <select
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    defaultValue={member.role}
-                  >
-                    <option>Admin</option>
-                    <option>Editor</option>
-                    <option>Viewer</option>
-                  </select>
-                  <button className="text-gray-400 hover:text-red-600 transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <select
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      defaultValue={member.role}
+                    >
+                      <option>Admin</option>
+                      <option>Editor</option>
+                      <option>Viewer</option>
+                    </select>
+                    <button className="text-gray-400 hover:text-red-600 transition-colors">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-6">
