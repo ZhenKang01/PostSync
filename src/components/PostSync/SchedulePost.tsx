@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Clock, Send, CheckCircle2, Linkedin, Facebook, Instagram } from 'lucide-react';
+import { Calendar, Clock, Send, CheckCircle2 } from 'lucide-react';
 
 interface SchedulePostProps {
   scheduledDate: string;
@@ -19,10 +19,10 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
   const [selectedTime, setSelectedTime] = useState('');
   const [isScheduled, setIsScheduled] = useState(false);
   const [platforms, setPlatforms] = useState<SelectedPlatform[]>([
-    { name: 'X', icon: null, color: 'bg-black', selected: true },
-    { name: 'LinkedIn', icon: Linkedin, color: 'bg-blue-600', selected: true },
-    { name: 'Facebook', icon: Facebook, color: 'bg-blue-500', selected: true },
-    { name: 'Instagram', icon: Instagram, color: 'bg-pink-500', selected: true },
+    { name: 'X', icon: '/image.png', color: 'bg-black', selected: true },
+    { name: 'LinkedIn', icon: '/linkedin-logo.svg', color: 'bg-blue-600', selected: true },
+    { name: 'Facebook', icon: '/facebook-logo.svg', color: 'bg-blue-500', selected: true },
+    { name: 'Instagram', icon: '/instagram-logo.svg', color: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400', selected: true },
   ]);
 
   const togglePlatform = (platformName: string) => {
@@ -69,7 +69,6 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
           </label>
           <div className="grid grid-cols-2 gap-3">
             {platforms.map((platform) => {
-              const Icon = platform.icon;
               return (
                 <button
                   key={platform.name}
@@ -80,12 +79,8 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
                       : 'border-gray-200 bg-white hover:border-gray-300'
                   }`}
                 >
-                  <div className={`w-8 h-8 ${platform.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    {platform.name === 'X' ? (
-                      <img src="/image.png" alt="X" className="w-4 h-4" />
-                    ) : (
-                      Icon && <Icon className="w-4 h-4 text-white" />
-                    )}
+                  <div className={`w-8 h-8 ${platform.color} rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden`}>
+                    <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
                   </div>
                   <span className="text-sm font-medium text-gray-900">{platform.name}</span>
                   {platform.selected && (
@@ -147,14 +142,9 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
                 <span className="text-xs text-gray-500">Publishing to:</span>
                 <div className="flex gap-1">
                   {platforms.filter(p => p.selected).map((platform) => {
-                    const Icon = platform.icon;
                     return (
-                      <div key={platform.name} className={`w-6 h-6 ${platform.color} rounded flex items-center justify-center`}>
-                        {platform.name === 'X' ? (
-                          <img src="/image.png" alt="X" className="w-3 h-3" />
-                        ) : (
-                          Icon && <Icon className="w-3 h-3 text-white" />
-                        )}
+                      <div key={platform.name} className={`w-6 h-6 ${platform.color} rounded flex items-center justify-center overflow-hidden`}>
+                        <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
                       </div>
                     );
                   })}

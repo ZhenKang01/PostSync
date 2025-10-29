@@ -217,17 +217,18 @@ export function Dashboard() {
           </div>
 
           <div className="space-y-4">
-            {['X', 'LinkedIn', 'Facebook', 'Instagram'].map((platform, index) => (
-              <div key={platform} className="flex items-center justify-between">
+            {[
+              { name: 'X', icon: '/image.png', bg: 'bg-black' },
+              { name: 'LinkedIn', icon: '/linkedin-logo.svg', bg: 'bg-white border border-gray-200' },
+              { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white border border-gray-200' },
+              { name: 'Instagram', icon: '/instagram-logo.svg', bg: 'bg-white border border-gray-200' },
+            ].map((platform) => (
+              <div key={platform.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    index === 0 ? 'bg-black' :
-                    index === 1 ? 'bg-blue-100' :
-                    index === 2 ? 'bg-blue-100' : 'bg-pink-100'
-                  }`}>
-                    {platform === 'X' && <img src="/image.png" alt="X" className="w-5 h-5" />}
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden ${platform.bg}`}>
+                    <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-medium text-gray-900">{platform}</span>
+                  <span className="font-medium text-gray-900">{platform.name}</span>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold text-gray-900">-</p>

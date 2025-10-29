@@ -141,13 +141,18 @@ export function Settings() {
           </div>
 
           <div className="space-y-3">
-            {['X', 'LinkedIn', 'Facebook', 'Instagram'].map((platform) => (
-              <div key={platform} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            {[
+              { name: 'X', icon: '/image.png', bg: 'bg-black' },
+              { name: 'LinkedIn', icon: '/linkedin-logo.svg', bg: 'bg-white' },
+              { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white' },
+              { name: 'Instagram', icon: '/instagram-logo.svg', bg: 'bg-white' },
+            ].map((platform) => (
+              <div key={platform.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center ${platform === 'X' ? 'bg-black' : 'bg-white'}`}>
-                    {platform === 'X' && <img src="/image.png" alt="X" className="w-5 h-5" />}
+                  <div className={`w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden ${platform.bg}`}>
+                    <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-medium text-gray-900">{platform}</span>
+                  <span className="font-medium text-gray-900">{platform.name}</span>
                 </div>
                 <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700">
                   Connect
