@@ -31,13 +31,60 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
     ));
   };
 
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
     if (scheduledDate && selectedTime) {
       const fullDateTime = `${scheduledDate}T${selectedTime}`;
       onScheduleChange(fullDateTime);
-      setIsScheduled(true);
 
-      setTimeout(() => setIsScheduled(false), 3000);
+      const selectedPlatformsList = platforms.filter(p => p.selected).map(p => p.name);
+
+      const postData = {
+        timestamp: new Date().toISOString(),
+        post: {
+          caption: caption,
+          image: uploadedImage,
+          wordCount: caption.trim().split(/\s+/).filter(w => w).length,
+          characterCount: caption.length,
+        },
+        schedule: {
+          date: scheduledDate,
+          time: selectedTime,
+          fullDateTime: fullDateTime,
+          formattedDateTime: new Date(fullDateTime).toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          }),
+        },
+        platforms: {
+          selected: selectedPlatformsList,
+          count: selectedPlatformsList.length,
+        },
+      };
+
+      try {
+        const response = await fetch('https://zhenkang.app.n8n.cloud/webhook/copywrite-check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postData),
+        });
+
+        if (response.ok) {
+          setIsScheduled(true);
+          setTimeout(() => setIsScheduled(false), 3000);
+        } else {
+          console.error('Failed to send data to webhook');
+          alert('Failed to schedule post. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error sending data to webhook:', error);
+        alert('An error occurred while scheduling the post. Please try again.');
+      }
     }
   };
 
