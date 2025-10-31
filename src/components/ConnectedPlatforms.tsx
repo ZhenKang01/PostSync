@@ -55,6 +55,17 @@ export function ConnectedPlatforms() {
 
   const handleConnect = async (platformName: string) => {
     try {
+      const config = oauthConfig[platformName];
+
+      // Check if client ID is configured
+      if (!config.clientId || config.clientId.includes('your_') || config.clientId.includes('_here')) {
+        setError(`${platformName} OAuth credentials not configured. Please add ${platformName === 'YouTube' ? 'VITE_YOUTUBE_CLIENT_ID' : `VITE_${platformName.toUpperCase()}_CLIENT_ID`} to your .env file.`);
+        return;
+      }
+
+      console.log(`Initiating OAuth for ${platformName}`);
+      console.log(`Redirect URI: ${config.redirectUri}`);
+
       setPlatforms(prev =>
         prev.map(p =>
           p.platform === platformName ? { ...p, loading: true } : p
@@ -70,10 +81,12 @@ export function ConnectedPlatforms() {
       localStorage.setItem('oauth_state', state);
 
       const authUrl = generateOAuthUrl(platformName, state);
+      console.log('OAuth URL:', authUrl);
+
       window.location.href = authUrl;
     } catch (err) {
       console.error('Error initiating OAuth:', err);
-      setError(`Failed to connect to ${platformName}`);
+      setError(`Failed to connect to ${platformName}: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setPlatforms(prev =>
         prev.map(p =>
           p.platform === platformName ? { ...p, loading: false } : p

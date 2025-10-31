@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { saveConnectedAccount } from '../services/connectedAccounts';
 
 export function OAuthCallback() {
   const [searchParams] = useSearchParams();
+  const { platform: platformParam } = useParams<{ platform: string }>();
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Processing authentication...');
@@ -18,31 +19,41 @@ export function OAuthCallback() {
       const code = searchParams.get('code');
       const state = searchParams.get('state');
       const error = searchParams.get('error');
+      const errorDescription = searchParams.get('error_description');
+
+      console.log('OAuth Callback - Platform:', platformParam);
+      console.log('OAuth Callback - Code:', code ? 'present' : 'missing');
+      console.log('OAuth Callback - State:', state ? 'present' : 'missing');
+      console.log('OAuth Callback - Error:', error);
+      console.log('OAuth Callback - Error Description:', errorDescription);
 
       if (error) {
         setStatus('error');
-        setMessage(`Authentication failed: ${error}`);
-        setTimeout(() => navigate('/settings'), 3000);
+        setMessage(`Authentication failed: ${errorDescription || error}`);
+        setTimeout(() => navigate('/dashboard/settings'), 3000);
         return;
       }
 
       if (!code || !state) {
         setStatus('error');
         setMessage('Invalid callback parameters');
-        setTimeout(() => navigate('/settings'), 3000);
+        setTimeout(() => navigate('/dashboard/settings'), 3000);
         return;
       }
 
       const savedState = localStorage.getItem('oauth_state');
       if (savedState !== state) {
+        console.error('State mismatch:', { saved: savedState, received: state });
         setStatus('error');
         setMessage('Invalid state parameter - possible CSRF attack');
-        setTimeout(() => navigate('/settings'), 3000);
+        setTimeout(() => navigate('/dashboard/settings'), 3000);
         return;
       }
 
       const stateData = JSON.parse(atob(state));
       const platform = stateData.platform;
+
+      console.log('OAuth Callback - Platform from state:', platform);
 
       const mockUserData = {
         X: { id: 'x_user_123', username: 'demo_user', email: 'demo@x.com' },
@@ -67,14 +78,15 @@ export function OAuthCallback() {
 
       localStorage.removeItem('oauth_state');
 
+      console.log('OAuth Callback - Success! Connected to', platform);
       setStatus('success');
       setMessage(`Successfully connected to ${platform}!`);
-      setTimeout(() => navigate('/settings'), 2000);
+      setTimeout(() => navigate('/dashboard/settings'), 2000);
     } catch (err) {
       console.error('OAuth callback error:', err);
       setStatus('error');
-      setMessage('Failed to complete authentication');
-      setTimeout(() => navigate('/settings'), 3000);
+      setMessage(err instanceof Error ? err.message : 'Failed to complete authentication');
+      setTimeout(() => navigate('/dashboard/settings'), 3000);
     }
   };
 
