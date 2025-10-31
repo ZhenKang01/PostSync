@@ -162,6 +162,8 @@ export function Settings() {
               { name: 'LinkedIn', icon: '/linkedin-logo.svg', bg: 'bg-white' },
               { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white' },
               { name: 'Instagram', icon: '/instagram-logo.png', bg: 'bg-white' },
+              { name: 'YouTube', icon: 'https://cdn.simpleicons.org/youtube/FF0000', bg: 'bg-white' },
+              { name: 'TikTok', icon: 'https://cdn.simpleicons.org/tiktok/000000', bg: 'bg-white' },
             ].map((platform) => (
               <div key={platform.name} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="flex items-center gap-3">

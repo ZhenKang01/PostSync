@@ -23,6 +23,8 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
     { name: 'LinkedIn', icon: '/linkedin-logo.svg', color: 'bg-blue-600', selected: true },
     { name: 'Facebook', icon: '/facebook-logo.svg', color: 'bg-blue-500', selected: true },
     { name: 'Instagram', icon: '/instagram-logo.png', color: 'bg-white', selected: true },
+    { name: 'YouTube', icon: 'https://cdn.simpleicons.org/youtube/FF0000', color: 'bg-white', selected: true },
+    { name: 'TikTok', icon: 'https://cdn.simpleicons.org/tiktok/000000', color: 'bg-white', selected: true },
   ]);
 
   const togglePlatform = (platformName: string) => {
@@ -114,7 +116,7 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
           <label className="block text-sm font-medium text-gray-700 mb-3">
             Select Platforms ({selectedPlatformCount})
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {platforms.map((platform) => {
               return (
                 <button
