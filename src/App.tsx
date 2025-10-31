@@ -11,6 +11,7 @@ import { CopywritingPage } from './pages/CopywritingPage';
 import { Analytics } from './pages/Analytics';
 import { Team } from './pages/Team';
 import { Settings } from './pages/Settings';
+import { OAuthCallback } from './pages/OAuthCallback';
 
 function App() {
   return (
@@ -20,6 +21,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/oauth/callback/:platform" element={
+            <ProtectedRoute>
+              <OAuthCallback />
+            </ProtectedRoute>
+          } />
 
           <Route path="/dashboard" element={
             <ProtectedRoute>

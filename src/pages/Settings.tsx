@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Settings as SettingsIcon, User, Bell, Shield, Palette, Globe } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { ConnectedPlatforms } from '../components/ConnectedPlatforms';
 
 export function Settings() {
   const [notifications, setNotifications] = useState(true);
@@ -156,28 +157,7 @@ export function Settings() {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Connected Platforms</h2>
           </div>
 
-          <div className="space-y-3">
-            {[
-              { name: 'X', icon: '/image.png', bg: 'bg-black' },
-              { name: 'LinkedIn', icon: '/linkedin-logo.svg', bg: 'bg-white' },
-              { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white' },
-              { name: 'Instagram', icon: '/instagram-logo.png', bg: 'bg-white' },
-              { name: 'YouTube', icon: 'https://cdn.simpleicons.org/youtube/FF0000', bg: 'bg-white' },
-              { name: 'TikTok', icon: 'https://cdn.simpleicons.org/tiktok/000000', bg: 'bg-white' },
-            ].map((platform) => (
-              <div key={platform.name} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 border border-gray-200 dark:border-gray-600 rounded-lg flex items-center justify-center overflow-hidden ${platform.bg}`}>
-                    <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
-                  </div>
-                  <span className="font-medium text-gray-900 dark:text-white">{platform.name}</span>
-                </div>
-                <button className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
-                  Connect
-                </button>
-              </div>
-            ))}
-          </div>
+          <ConnectedPlatforms />
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
