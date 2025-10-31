@@ -93,5 +93,10 @@ export function generateOAuthUrl(platform: string, state: string): string {
     params.append('code_challenge_method', 'plain');
   }
 
+  if (platform === 'YouTube') {
+    params.append('access_type', 'offline');
+    params.append('prompt', 'consent');
+  }
+
   return `${config.authUrl}?${params.toString()}`;
 }
