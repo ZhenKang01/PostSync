@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Sparkles, Wand2, Loader2, RefreshCw, ChevronRight, Lightbulb } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 interface AIGenerationModalProps {
   onClose: () => void;
@@ -45,8 +46,14 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     setIsGenerating(true);
 
     try {
+      // Get the user's session token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw new Error('You must be logged in to generate images');
+      }
+
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const edgeFunctionUrl = `${supabaseUrl}/functions/v1/pixlr-generate`;
 
       const requestBody = {
@@ -58,7 +65,7 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify(requestBody),
       });
