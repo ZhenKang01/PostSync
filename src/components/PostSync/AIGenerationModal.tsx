@@ -54,6 +54,7 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${anonKey}`,
           'apikey': anonKey,
         },
         body: JSON.stringify({
