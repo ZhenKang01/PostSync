@@ -12,8 +12,9 @@ interface GenerateRequest {
 }
 
 // Helper function to base64url encode
-function base64urlEncode(data: ArrayBuffer): string {
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+function base64urlEncode(data: ArrayBuffer | Uint8Array): string {
+  const bytes = data instanceof ArrayBuffer ? new Uint8Array(data) : data;
+  const base64 = btoa(String.fromCharCode(...bytes));
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
@@ -26,10 +27,10 @@ async function generatePixlrToken(apiKey: string, apiSecret: string): Promise<st
   };
 
   // Create JWT payload as per Pixlr documentation
+  // sub = API key, mode = http for server-side integration
   const payload = {
     sub: apiKey,
     mode: "http",
-    origin: "*",
   };
 
   // Encode header and payload
@@ -128,14 +129,16 @@ Deno.serve(async (req: Request) => {
       height: 800,
     };
 
-    console.log("Sending request to Pixlr API with JWT token");
+    // Build URL with token as query parameter (as per Pixlr docs)
+    const apiUrl = `https://pixlr.com/api/ai/generate?token=${encodeURIComponent(token)}`;
 
-    // Make request to Pixlr API with JWT token
-    const pixlrResponse = await fetch("https://pixlr.com/api/ai/generate", {
+    console.log("Sending request to Pixlr API with JWT token in query param");
+
+    // Make request to Pixlr API with JWT token in URL
+    const pixlrResponse = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify(requestPayload),
     });
