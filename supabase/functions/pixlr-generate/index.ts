@@ -48,8 +48,8 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const pixlrClientId = "690608d277cfaad90cf1bebb";
-    const pixlrClientSecret = "a0d7c0d85fc04cb2bccbec107d417590";
+    const pixlrClientId = "6906159977cfaad90cf4524a";
+    const pixlrClientSecret = "eb5ff1ca98cf405892322b9745eff002";
 
     const requestPayload = {
       client_key: pixlrClientId,
