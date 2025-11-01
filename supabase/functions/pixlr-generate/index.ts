@@ -51,26 +51,38 @@ Deno.serve(async (req: Request) => {
     const pixlrClientId = "690608d277cfaad90cf1bebb";
     const pixlrClientSecret = "a0d7c0d85fc04cb2bccbec107d417590";
 
-    const pixlrResponse = await fetch("https://api.pixlr.com/v1/ai/generate", {
+    // Try different possible Pixlr API endpoints and authentication methods
+    const requestPayload = {
+      client_key: pixlrClientId,
+      client_secret: pixlrClientSecret,
+      prompt: prompt.trim(),
+      style: style,
+      width: 1200,
+      height: 800,
+    };
+
+    console.log("Sending request to Pixlr API with payload:", {
+      ...requestPayload,
+      client_secret: "[REDACTED]"
+    });
+
+    const pixlrResponse = await fetch("https://pixlr.com/api/ai/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${pixlrClientId}:${pixlrClientSecret}`,
       },
-      body: JSON.stringify({
-        prompt: prompt.trim(),
-        style: style,
-        width: 1200,
-        height: 800,
-      }),
+      body: JSON.stringify(requestPayload),
     });
 
     if (!pixlrResponse.ok) {
       const errorText = await pixlrResponse.text();
       console.error("Pixlr API error:", errorText);
+      console.error("Status:", pixlrResponse.status);
+      console.error("Status Text:", pixlrResponse.statusText);
       return new Response(
         JSON.stringify({ 
           error: "Failed to generate image with Pixlr",
+          status: pixlrResponse.status,
           details: errorText 
         }),
         {
@@ -84,6 +96,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const pixlrData = await pixlrResponse.json();
+    console.log("Pixlr API response:", pixlrData);
 
     return new Response(
       JSON.stringify(pixlrData),
@@ -97,10 +110,12 @@ Deno.serve(async (req: Request) => {
     );
   } catch (error) {
     console.error("Error in pixlr-generate function:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return new Response(
       JSON.stringify({ 
         error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error"
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined
       }),
       {
         status: 500,

@@ -65,18 +65,27 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('API error:', errorData);
-        throw new Error(errorData.error || `API error: ${response.status} ${response.statusText}`);
+        console.error('API error response:', errorData);
+        console.error('Response status:', response.status);
+        console.error('Response statusText:', response.statusText);
+
+        const errorDetails = errorData.details ? `\n\nDetails: ${errorData.details}` : '';
+        const errorMsg = errorData.message ? `\n\nMessage: ${errorData.message}` : '';
+
+        throw new Error(
+          `${errorData.error || 'API error'}${errorMsg}${errorDetails}`
+        );
       }
 
       const data = await response.json();
+      console.log('Received response from API:', data);
 
-      if (data.image_url || data.url || data.output_url) {
-        const imageUrl = data.image_url || data.url || data.output_url;
+      if (data.image_url || data.url || data.output_url || data.result) {
+        const imageUrl = data.image_url || data.url || data.output_url || data.result;
         setGeneratedImage(imageUrl);
       } else {
-        console.error('Unexpected API response:', data);
-        throw new Error('No image URL returned from API');
+        console.error('Unexpected API response structure:', data);
+        throw new Error('No image URL returned from API. Please check console for details.');
       }
     } catch (error) {
       console.error('Error generating image:', error);
