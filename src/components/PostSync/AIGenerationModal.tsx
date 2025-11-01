@@ -47,12 +47,15 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
 
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const functionUrl = `${supabaseUrl}/functions/v1/pixlr-generate`;
 
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${anonKey}`,
+          'apikey': anonKey,
         },
         body: JSON.stringify({
           prompt: prompt.trim(),
