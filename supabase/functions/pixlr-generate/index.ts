@@ -11,6 +11,60 @@ interface GenerateRequest {
   style: string;
 }
 
+// Helper function to base64url encode
+function base64urlEncode(data: ArrayBuffer): string {
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+// Helper function to create a JWT token for Pixlr API
+async function generatePixlrToken(apiKey: string, apiSecret: string): Promise<string> {
+  // Create JWT header
+  const header = {
+    alg: "HS256",
+    typ: "JWT"
+  };
+
+  // Create JWT payload as per Pixlr documentation
+  const payload = {
+    sub: apiKey,
+    mode: "http",
+    origin: "*",
+  };
+
+  // Encode header and payload
+  const encodedHeader = base64urlEncode(
+    new TextEncoder().encode(JSON.stringify(header))
+  );
+  const encodedPayload = base64urlEncode(
+    new TextEncoder().encode(JSON.stringify(payload))
+  );
+
+  // Create the signing input
+  const signingInput = `${encodedHeader}.${encodedPayload}`;
+
+  // Create the signature
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(apiSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(signingInput)
+  );
+
+  // Encode the signature
+  const encodedSignature = base64urlEncode(signature);
+
+  // Return the complete JWT
+  return `${signingInput}.${encodedSignature}`;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -48,24 +102,40 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const pixlrClientId = "6906159977cfaad90cf4524a";
-    const pixlrClientSecret = "eb5ff1ca98cf405892322b9745eff002";
+    const pixlrApiKey = "6906159977cfaad90cf4524a";
+    const pixlrApiSecret = "eb5ff1ca98cf405892322b9745eff002";
+
+    // Generate JWT token
+    console.log("Generating JWT token for Pixlr API");
+    const token = await generatePixlrToken(pixlrApiKey, pixlrApiSecret);
+    console.log("Token generated successfully");
+
+    // Enhanced prompt based on style
+    const stylePrompts: Record<string, string> = {
+      modern: "modern, clean, contemporary style",
+      vintage: "vintage, retro, classic style",
+      minimalist: "minimalist, simple, clean lines",
+      bold: "bold, vibrant, striking colors",
+      professional: "professional, business, corporate style",
+      artistic: "artistic, creative, expressive style",
+    };
+
+    const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}`;
 
     const requestPayload = {
-      client_key: pixlrClientId,
-      client_secret: pixlrClientSecret,
-      prompt: prompt.trim(),
-      style: style,
+      prompt: enhancedPrompt,
       width: 1200,
       height: 800,
     };
 
-    console.log("Sending request to Pixlr API");
+    console.log("Sending request to Pixlr API with JWT token");
 
+    // Make request to Pixlr API with JWT token
     const pixlrResponse = await fetch("https://pixlr.com/api/ai/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify(requestPayload),
     });
@@ -91,7 +161,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const pixlrData = await pixlrResponse.json();
-    console.log("Pixlr API success");
+    console.log("Pixlr API success:", pixlrData);
 
     return new Response(
       JSON.stringify(pixlrData),
