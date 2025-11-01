@@ -1,5 +1,3 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -12,8 +10,11 @@ interface GenerateRequest {
 }
 
 Deno.serve(async (req: Request) => {
+  console.log("Function invoked!", req.method);
+  
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
+    console.log("Handling OPTIONS request");
     return new Response(null, {
       status: 200,
       headers: corsHeaders,
@@ -21,7 +22,10 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { prompt, style }: GenerateRequest = await req.json();
+    const body = await req.json();
+    console.log("Received body:", body);
+    
+    const { prompt, style } = body as GenerateRequest;
 
     console.log("Received request - prompt:", prompt, "style:", style);
 
@@ -83,6 +87,8 @@ Deno.serve(async (req: Request) => {
       }
     );
 
+    console.log("HF Response status:", hfResponse.status);
+
     if (!hfResponse.ok) {
       const errorText = await hfResponse.text();
       console.error("Hugging Face API error:", errorText);
@@ -97,7 +103,7 @@ Deno.serve(async (req: Request) => {
             status: 503
           }),
           {
-            status: 503,
+            status: 200,
             headers: {
               ...corsHeaders,
               "Content-Type": "application/json",
@@ -113,7 +119,7 @@ Deno.serve(async (req: Request) => {
           details: errorText 
         }),
         {
-          status: hfResponse.status,
+          status: 200,
           headers: {
             ...corsHeaders,
             "Content-Type": "application/json",
