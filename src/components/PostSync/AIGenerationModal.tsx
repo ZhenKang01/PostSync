@@ -45,37 +45,43 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     setIsGenerating(true);
 
     try {
-      const pixlrApiUrl = 'https://api.pixlr.com/v1/generate';
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const edgeFunctionUrl = `${supabaseUrl}/functions/v1/pixlr-generate`;
 
       const requestBody = {
-        client_id: '690608d277cfaad90cf1bebb',
-        client_secret: 'a0d7c0d85fc04cb2bccbec107d417590',
         prompt: prompt.trim(),
         style: selectedStyle,
       };
 
-      const response = await fetch(pixlrApiUrl, {
+      const response = await fetch(edgeFunctionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`,
         },
         body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        throw new Error(`Pixlr API error: ${response.status} ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API error:', errorData);
+        throw new Error(errorData.error || `API error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
-      if (data.image_url) {
-        setGeneratedImage(data.image_url);
+      if (data.image_url || data.url || data.output_url) {
+        const imageUrl = data.image_url || data.url || data.output_url;
+        setGeneratedImage(imageUrl);
       } else {
-        throw new Error('No image URL returned from Pixlr API');
+        console.error('Unexpected API response:', data);
+        throw new Error('No image URL returned from API');
       }
     } catch (error) {
-      console.error('Error generating image with Pixlr:', error);
-      alert('Failed to generate image. Please try again.');
+      console.error('Error generating image:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate image. Please try again.';
+      alert(errorMessage);
     } finally {
       setIsGenerating(false);
     }
