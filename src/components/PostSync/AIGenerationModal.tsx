@@ -46,18 +46,27 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     setIsGenerating(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('pixlr-generate', {
-        body: {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const functionUrl = `${supabaseUrl}/functions/v1/pixlr-generate`;
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           prompt: prompt.trim(),
           style: selectedStyle,
-        },
+        }),
       });
 
-      if (error) {
-        console.error('API error response:', error);
-        throw new Error(error.message || 'Failed to generate image');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API error response:', errorData);
+        throw new Error(errorData.error || errorData.message || 'Failed to generate image');
       }
 
+      const data = await response.json();
       console.log('Received response from API:', data);
 
       if (data.image_url || data.url || data.output_url || data.result) {
