@@ -1,12 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, User, Bell, Shield, Palette, Globe } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { ConnectedPlatforms } from '../components/ConnectedPlatforms';
+import { supabase } from '../lib/supabase';
 
 export function Settings() {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState(true);
   const [emailDigest, setEmailDigest] = useState(true);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [company, setCompany] = useState('');
+  const [loading, setLoading] = useState(true);
   const { isDarkMode, toggleDarkMode } = useTheme();
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
+
+  const fetchProfile = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('full_name, email, company')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (data) {
+      setFullName(data.full_name || '');
+      setEmail(data.email || user.email || '');
+      setCompany(data.company || '');
+    }
+    setLoading(false);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: fullName,
+        company: company,
+      })
+      .eq('id', user.id);
+
+    if (!error) {
+      alert('Profile updated successfully!');
+    } else {
+      alert('Error updating profile: ' + error.message);
+    }
+  };
 
   return (
     <div className="p-8 dark:bg-gray-900 min-h-screen">
@@ -36,8 +85,10 @@ export function Settings() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
               <input
                 type="text"
-                defaultValue="John Doe"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               />
             </div>
 
@@ -45,21 +96,30 @@ export function Settings() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
               <input
                 type="email"
-                defaultValue="john@example.com"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={email}
+                disabled
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed opacity-60"
               />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Email cannot be changed</p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company</label>
               <input
                 type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                disabled={loading}
                 placeholder="Your company name"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               />
             </div>
 
-            <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors">
+            <button
+              onClick={handleSaveProfile}
+              disabled={loading}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Save Changes
             </button>
           </div>
