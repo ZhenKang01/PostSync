@@ -1,3 +1,4 @@
+// Version 2 - Public endpoint
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const corsHeaders = {
@@ -12,6 +13,7 @@ interface GenerateRequest {
 }
 
 Deno.serve(async (req: Request) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 200,
@@ -21,6 +23,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     const { prompt, style }: GenerateRequest = await req.json();
+
+    console.log("Received request - prompt:", prompt, "style:", style);
 
     if (!prompt || prompt.trim().length < 10) {
       return new Response(
@@ -60,7 +64,7 @@ Deno.serve(async (req: Request) => {
 
     const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}, high quality, detailed, 4k`;
 
-    console.log("Generating image with Hugging Face:", enhancedPrompt);
+    console.log("Generating image with prompt:", enhancedPrompt);
 
     // Use Hugging Face's free Stable Diffusion model
     const hfResponse = await fetch(
