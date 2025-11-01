@@ -11,61 +11,6 @@ interface GenerateRequest {
   style: string;
 }
 
-// Helper function to base64url encode
-function base64urlEncode(data: ArrayBuffer | Uint8Array): string {
-  const bytes = data instanceof ArrayBuffer ? new Uint8Array(data) : data;
-  const base64 = btoa(String.fromCharCode(...bytes));
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-// Helper function to create a JWT token for Pixlr API
-async function generatePixlrToken(apiKey: string, apiSecret: string): Promise<string> {
-  // Create JWT header
-  const header = {
-    alg: "HS256",
-    typ: "JWT"
-  };
-
-  // Create JWT payload as per Pixlr documentation
-  // sub = API key, mode = http for server-side integration
-  const payload = {
-    sub: apiKey,
-    mode: "http",
-  };
-
-  // Encode header and payload
-  const encodedHeader = base64urlEncode(
-    new TextEncoder().encode(JSON.stringify(header))
-  );
-  const encodedPayload = base64urlEncode(
-    new TextEncoder().encode(JSON.stringify(payload))
-  );
-
-  // Create the signing input
-  const signingInput = `${encodedHeader}.${encodedPayload}`;
-
-  // Create the signature
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(apiSecret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    new TextEncoder().encode(signingInput)
-  );
-
-  // Encode the signature
-  const encodedSignature = base64urlEncode(signature);
-
-  // Return the complete JWT
-  return `${signingInput}.${encodedSignature}`;
-}
-
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -103,58 +48,69 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const pixlrApiKey = "6906159977cfaad90cf4524a";
-    const pixlrApiSecret = "eb5ff1ca98cf405892322b9745eff002";
-
-    // Generate JWT token
-    console.log("Generating JWT token for Pixlr API");
-    const token = await generatePixlrToken(pixlrApiKey, pixlrApiSecret);
-    console.log("Token generated successfully");
-
     // Enhanced prompt based on style
     const stylePrompts: Record<string, string> = {
-      modern: "modern, clean, contemporary style",
-      vintage: "vintage, retro, classic style",
-      minimalist: "minimalist, simple, clean lines",
-      bold: "bold, vibrant, striking colors",
-      professional: "professional, business, corporate style",
-      artistic: "artistic, creative, expressive style",
+      modern: "modern, clean, contemporary, sleek design",
+      vintage: "vintage, retro, classic, nostalgic style",
+      minimalist: "minimalist, simple, clean lines, uncluttered",
+      bold: "bold, vibrant, striking colors, dynamic",
+      professional: "professional, business, corporate, polished",
+      artistic: "artistic, creative, expressive, imaginative",
     };
 
-    const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}`;
+    const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}, high quality, detailed, 4k`;
 
-    const requestPayload = {
-      prompt: enhancedPrompt,
-      width: 1200,
-      height: 800,
-    };
+    console.log("Generating image with Hugging Face:", enhancedPrompt);
 
-    // Build URL with token as query parameter (as per Pixlr docs)
-    const apiUrl = `https://pixlr.com/api/ai/generate?token=${encodeURIComponent(token)}`;
+    // Use Hugging Face's free Stable Diffusion model
+    const hfResponse = await fetch(
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: enhancedPrompt,
+          parameters: {
+            num_inference_steps: 30,
+            guidance_scale: 7.5,
+          },
+        }),
+      }
+    );
 
-    console.log("Sending request to Pixlr API with JWT token in query param");
-
-    // Make request to Pixlr API with JWT token in URL
-    const pixlrResponse = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestPayload),
-    });
-
-    if (!pixlrResponse.ok) {
-      const errorText = await pixlrResponse.text();
-      console.error("Pixlr API error:", errorText);
-      console.error("Status:", pixlrResponse.status);
+    if (!hfResponse.ok) {
+      const errorText = await hfResponse.text();
+      console.error("Hugging Face API error:", errorText);
+      console.error("Status:", hfResponse.status);
+      
+      // If model is loading, return a helpful message
+      if (hfResponse.status === 503) {
+        return new Response(
+          JSON.stringify({ 
+            error: "AI model is warming up",
+            message: "The AI model is loading. This typically takes 20-30 seconds. Please try again in a moment.",
+            status: 503
+          }),
+          {
+            status: 503,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+      
       return new Response(
         JSON.stringify({ 
-          error: "Failed to generate image with Pixlr",
-          status: pixlrResponse.status,
+          error: "Failed to generate image",
+          status: hfResponse.status,
           details: errorText 
         }),
         {
-          status: pixlrResponse.status,
+          status: hfResponse.status,
           headers: {
             ...corsHeaders,
             "Content-Type": "application/json",
@@ -163,11 +119,20 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const pixlrData = await pixlrResponse.json();
-    console.log("Pixlr API success:", pixlrData);
+    // Get the image blob
+    const imageBlob = await hfResponse.blob();
+    console.log("Image generated successfully, size:", imageBlob.size);
+
+    // Convert blob to base64
+    const arrayBuffer = await imageBlob.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const imageUrl = `data:image/jpeg;base64,${base64}`;
 
     return new Response(
-      JSON.stringify(pixlrData),
+      JSON.stringify({ 
+        image_url: imageUrl,
+        success: true 
+      }),
       {
         status: 200,
         headers: {
@@ -177,7 +142,7 @@ Deno.serve(async (req: Request) => {
       }
     );
   } catch (error) {
-    console.error("Error in pixlr-generate function:", error);
+    console.error("Error in image generation function:", error);
     return new Response(
       JSON.stringify({ 
         error: "Internal server error",
