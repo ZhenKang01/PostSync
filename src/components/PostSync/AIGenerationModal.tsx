@@ -46,39 +46,18 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     setIsGenerating(true);
 
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const edgeFunctionUrl = `${supabaseUrl}/functions/v1/pixlr-generate`;
-
-      const requestBody = {
-        prompt: prompt.trim(),
-        style: selectedStyle,
-      };
-
-      const response = await fetch(edgeFunctionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      const { data, error } = await supabase.functions.invoke('pixlr-generate', {
+        body: {
+          prompt: prompt.trim(),
+          style: selectedStyle,
         },
-        body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('API error response:', errorData);
-        console.error('Response status:', response.status);
-        console.error('Response statusText:', response.statusText);
-
-        const errorDetails = errorData.details ? `\n\nDetails: ${errorData.details}` : '';
-        const errorMsg = errorData.message ? `\n\nMessage: ${errorData.message}` : '';
-
-        throw new Error(
-          `${errorData.error || 'API error'}${errorMsg}${errorDetails}`
-        );
+      if (error) {
+        console.error('Function invocation error:', error);
+        throw new Error(error.message || 'Failed to generate image');
       }
 
-      const data = await response.json();
       console.log('Received response from API:', data);
 
       if (data.image_url || data.url || data.output_url || data.result) {
