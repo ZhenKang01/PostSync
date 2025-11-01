@@ -37,13 +37,48 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
       return;
     }
 
+    if (!selectedStyle) {
+      alert('Please select a style preset');
+      return;
+    }
+
     setIsGenerating(true);
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    try {
+      const pixlrApiUrl = 'https://api.pixlr.com/v1/generate';
 
-    const mockImage = 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop';
-    setGeneratedImage(mockImage);
-    setIsGenerating(false);
+      const requestBody = {
+        client_id: '690608d277cfaad90cf1bebb',
+        client_secret: 'a0d7c0d85fc04cb2bccbec107d417590',
+        prompt: prompt.trim(),
+        style: selectedStyle,
+      };
+
+      const response = await fetch(pixlrApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Pixlr API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.image_url) {
+        setGeneratedImage(data.image_url);
+      } else {
+        throw new Error('No image URL returned from Pixlr API');
+      }
+    } catch (error) {
+      console.error('Error generating image with Pixlr:', error);
+      alert('Failed to generate image. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleRegenerate = () => {
@@ -136,7 +171,7 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Style preset (optional)
+                  Style preset <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {STYLE_PRESETS.map((style) => (
@@ -242,7 +277,7 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
               </button>
               <button
                 onClick={handleGenerate}
-                disabled={isGenerating || !isValidLength}
+                disabled={isGenerating || !isValidLength || !selectedStyle}
                 className="flex-1 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isGenerating ? (
