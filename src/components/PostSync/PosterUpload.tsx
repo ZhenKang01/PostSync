@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
-import { Upload, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Upload, Sparkles, Image as ImageIcon, X } from 'lucide-react';
 import { PlatformPreviews } from './PlatformPreviews';
+import { AIGenerationModal } from './AIGenerationModal';
 
 interface PosterUploadProps {
   uploadedImage: string | null;
@@ -12,6 +13,7 @@ type UploadMethod = 'selection' | 'upload' | 'ai';
 export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>('selection');
+  const [showAIModal, setShowAIModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -91,8 +93,10 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     }
   };
 
-  const handleAIClick = () => {
-    console.log('AI Generate clicked - ready for Pixlr integration');
+  const handleAIGenerate = (imageUrl: string) => {
+    onImageUpload(imageUrl);
+    setUploadMethod('ai');
+    setShowAIModal(false);
   };
 
   if (uploadedImage) {
@@ -217,7 +221,7 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
             </div>
 
             <div
-              onClick={handleAIClick}
+              onClick={() => setShowAIModal(true)}
               className="group relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer border-purple-300 dark:border-purple-700 hover:border-purple-400 dark:hover:border-purple-600 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20"
             >
               <div className="flex flex-col items-center gap-4">
@@ -240,7 +244,7 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
                   className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold rounded-lg transition-all shadow-sm group-hover:shadow-md"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleAIClick();
+                    setShowAIModal(true);
                   }}
                 >
                   Create with AI
@@ -250,6 +254,13 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
           </div>
         </div>
       </div>
+
+      {showAIModal && (
+        <AIGenerationModal
+          onClose={() => setShowAIModal(false)}
+          onGenerate={handleAIGenerate}
+        />
+      )}
     </>
   );
 }
