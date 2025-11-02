@@ -99,21 +99,21 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
   const canSchedule = uploadedImage && caption && scheduledDate && selectedTime && selectedPlatformCount > 0;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 h-fit sticky top-24">
+    <div className="bg-white dark:bg-[#1F2937] rounded-2xl shadow-sm border border-gray-200 dark:border-[#374151] p-6 h-fit sticky top-24">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-lg">
           <Calendar className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Schedule Post</h3>
-          <p className="text-sm text-gray-500">Choose when and where to publish</p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Schedule Post</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Choose when and where to publish</p>
         </div>
       </div>
 
       <div className="space-y-6">
         {/* Platform Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-[#D1D5DB] mb-3">
             Select Platforms ({selectedPlatformCount})
           </label>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
@@ -124,16 +124,16 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
                   onClick={() => togglePlatform(platform.name)}
                   className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
                     platform.selected
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-[#374151] bg-white dark:bg-[#0A0A0F] hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
                   <div className={`w-8 h-8 ${platform.color} rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                     <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
                   </div>
-                  <span className="text-sm font-medium text-gray-900">{platform.name}</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">{platform.name}</span>
                   {platform.selected && (
-                    <CheckCircle2 className="w-5 h-5 text-blue-600 ml-auto" />
+                    <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400 ml-auto" />
                   )}
                 </button>
               );
@@ -143,7 +143,7 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
 
         {/* Date Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-[#D1D5DB] mb-2">
             <Calendar className="w-4 h-4 inline mr-1" />
             Date
           </label>
@@ -152,13 +152,13 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
             value={scheduledDate}
             min={getMinDate()}
             onChange={(e) => onScheduleChange(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-[#374151] rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-[#0A0A0F] text-gray-900 dark:text-white"
           />
         </div>
 
         {/* Time Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-[#D1D5DB] mb-2">
             <Clock className="w-4 h-4 inline mr-1" />
             Time
           </label>
@@ -166,14 +166,14 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
             type="time"
             value={selectedTime}
             onChange={(e) => setSelectedTime(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-[#374151] rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-[#0A0A0F] text-gray-900 dark:text-white"
           />
         </div>
 
         {/* Preview Summary */}
         {uploadedImage && caption && (
-          <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-lg p-4 border border-gray-200">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 dark:from-[#0A0A0F] dark:to-blue-900/10 rounded-lg p-4 border border-gray-200 dark:border-[#374151]">
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
               Post Preview
             </p>
             <div className="space-y-3">
@@ -181,14 +181,14 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
                 <img
                   src={uploadedImage}
                   alt="Preview"
-                  className="w-16 h-16 object-cover rounded-lg border border-gray-300"
+                  className="w-16 h-16 object-cover rounded-lg border border-gray-300 dark:border-[#374151]"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-700 line-clamp-3">{caption}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{caption}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
-                <span className="text-xs text-gray-500">Publishing to:</span>
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-[#374151]">
+                <span className="text-xs text-gray-500 dark:text-gray-400">Publishing to:</span>
                 <div className="flex gap-1">
                   {platforms.filter(p => p.selected).map((platform) => {
                     return (
@@ -211,8 +211,8 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
             isScheduled
               ? 'bg-green-600 text-white'
               : canSchedule
-              ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-lg shadow-green-500/30 hover:shadow-xl'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-lg hover:shadow-xl'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
           }`}
         >
           {isScheduled ? (
@@ -230,7 +230,7 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
 
         {!canSchedule && (
           <div className="text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               {!uploadedImage && '📸 Upload an image • '}
               {!caption && '✍️ Write a caption • '}
               {!scheduledDate && '📅 Pick a date • '}
@@ -241,8 +241,8 @@ export function SchedulePost({ scheduledDate, onScheduleChange, uploadedImage, c
         )}
 
         {scheduledDate && selectedTime && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-            <p className="text-sm text-green-800">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-center">
+            <p className="text-sm text-green-800 dark:text-green-300">
               <span className="font-semibold">Scheduled for:</span> {new Date(`${scheduledDate}T${selectedTime}`).toLocaleString('en-US', {
                 weekday: 'short',
                 month: 'short',
