@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, Sparkles, Wand2, Loader2, RefreshCw, ChevronRight, Lightbulb } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 interface AIGenerationModalProps {
   onClose: () => void;
@@ -46,7 +46,19 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     setIsGenerating(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('pixlr-generate', {
+      // Create a non-authenticated client for public function access
+      const publicClient = createClient(
+        import.meta.env.VITE_SUPABASE_URL,
+        import.meta.env.VITE_SUPABASE_ANON_KEY,
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+          },
+        }
+      );
+
+      const { data, error } = await publicClient.functions.invoke('pixlr-generate', {
         body: {
           prompt: prompt.trim(),
           style: selectedStyle,
