@@ -1,9 +1,7 @@
 import { useState, useRef } from 'react';
-import { UploadCloud, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Upload, Sparkles, Image as ImageIcon, X } from 'lucide-react';
 import { PlatformPreviews } from './PlatformPreviews';
 import { AIGenerationModal } from './AIGenerationModal';
-import { Toast } from '../Toast';
-import { ImageEditor } from '../ImageEditor';
 
 interface PosterUploadProps {
   uploadedImage: string | null;
@@ -16,9 +14,7 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
   const [isDragging, setIsDragging] = useState(false);
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>('selection');
   const [showAIModal, setShowAIModal] = useState(false);
-  const [showEditor, setShowEditor] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): string | null => {
@@ -26,11 +22,11 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     const maxSize = 10 * 1024 * 1024;
 
     if (!validTypes.includes(file.type)) {
-      return 'Please upload JPG, PNG, or WebP only';
+      return 'Invalid file type. Please upload JPG, PNG, or WebP images only.';
     }
 
     if (file.size > maxSize) {
-      return 'File must be under 10MB. Please compress and try again';
+      return 'File size exceeds 10MB. Please upload a smaller image.';
     }
 
     return null;
@@ -43,24 +39,15 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
+      setTimeout(() => setError(null), 5000);
       return;
     }
 
     setError(null);
-    setIsLoading(true);
-
     const reader = new FileReader();
     reader.onload = (event) => {
-      setTimeout(() => {
-        onImageUpload(event.target?.result as string);
-        setUploadMethod('upload');
-        setIsLoading(false);
-        setShowEditor(true);
-      }, 500);
-    };
-    reader.onerror = () => {
-      setError('Something went wrong. Please try again');
-      setIsLoading(false);
+      onImageUpload(event.target?.result as string);
+      setUploadMethod('upload');
     };
     reader.readAsDataURL(file);
   };
@@ -84,24 +71,15 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
+      setTimeout(() => setError(null), 5000);
       return;
     }
 
     setError(null);
-    setIsLoading(true);
-
     const reader = new FileReader();
     reader.onload = (event) => {
-      setTimeout(() => {
-        onImageUpload(event.target?.result as string);
-        setUploadMethod('upload');
-        setIsLoading(false);
-        setShowEditor(true);
-      }, 500);
-    };
-    reader.onerror = () => {
-      setError('Something went wrong. Please try again');
-      setIsLoading(false);
+      onImageUpload(event.target?.result as string);
+      setUploadMethod('upload');
     };
     reader.readAsDataURL(file);
   };
@@ -119,16 +97,7 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     onImageUpload(imageUrl);
     setUploadMethod('ai');
     setShowAIModal(false);
-    setShowEditor(true);
   };
-
-  const handleEditorBack = () => {
-    setShowEditor(false);
-  };
-
-  if (showEditor && uploadedImage) {
-    return <ImageEditor imageUrl={uploadedImage} onBack={handleEditorBack} />;
-  }
 
   if (uploadedImage) {
     return (
@@ -143,7 +112,7 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
               {uploadMethod === 'ai' ? (
                 <Sparkles className="w-5 h-5 text-white" />
               ) : (
-                <UploadCloud className="w-5 h-5 text-white" />
+                <Upload className="w-5 h-5 text-white" />
               )}
             </div>
             <div>
@@ -180,53 +149,63 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
 
   return (
     <>
-      {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Create Your Poster</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Upload an image or generate one with AI
+            </p>
+          </div>
+        </div>
 
-      <div className="max-w-[1200px] mx-auto px-6 md:px-20 py-8 md:py-20">
-        <div className="relative grid md:grid-cols-2 gap-8">
-          {/* Upload Card */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-4">
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`group relative bg-gray-800 border rounded-2xl p-10 min-h-[400px] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
+            className={`group relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
               isDragging
-                ? 'border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.5)] scale-[1.02]'
-                : 'border-gray-700 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:scale-[1.02]'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gray-50 dark:hover:bg-gray-700/50'
             }`}
-            onClick={() => !isLoading && fileInputRef.current?.click()}
+            onClick={() => fileInputRef.current?.click()}
           >
-            {isLoading && (
-              <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-white font-medium">Processing image...</p>
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Upload className="w-7 h-7 text-blue-600 dark:text-blue-400" />
               </div>
-            )}
-            <UploadCloud className="w-16 h-16 text-blue-500 mb-6" />
-
-            <h3 className="text-2xl font-bold text-white mb-3">
-              Upload from Device
-            </h3>
-
-            <p className="text-base text-gray-300 text-center mb-2">
-              Choose an existing image from your computer
-            </p>
-
-            <p className="text-sm text-gray-400 mb-8">
-              Supports: JPG, PNG, WebP (Max 10MB)
-            </p>
-
-            <button
-              type="button"
-              className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:brightness-110 shadow-lg"
-              onClick={(e) => {
-                e.stopPropagation();
-                fileInputRef.current?.click();
-              }}
-            >
-              Browse Files
-            </button>
-
+              <div>
+                <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                  Upload from Device
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  Choose an existing image from your computer
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">
+                  JPG, PNG, WebP • Max 10MB
+                </p>
+              </div>
+              <button
+                type="button"
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                Browse Files
+              </button>
+            </div>
             <input
               ref={fileInputRef}
               type="file"
@@ -236,51 +215,42 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
             />
           </div>
 
-          {/* OR Divider - Desktop */}
-          <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center w-[60px] h-[60px] bg-gray-800 rounded-full border-2 border-transparent bg-clip-padding z-10"
-               style={{
-                 backgroundImage: 'linear-gradient(#1F2937, #1F2937), linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
-                 backgroundOrigin: 'border-box',
-                 backgroundClip: 'padding-box, border-box'
-               }}>
-            <span className="text-sm font-bold text-white">OR</span>
-          </div>
-
-          {/* OR Divider - Mobile */}
-          <div className="md:hidden relative flex items-center my-4">
-            <div className="flex-grow border-t border-gray-700"></div>
-            <div className="flex-shrink-0 mx-4 w-12 h-12 bg-gray-800 rounded-full border-2 border-gray-700 flex items-center justify-center">
-              <span className="text-sm font-bold text-white">OR</span>
+          <div className="relative">
+            <div className="absolute -left-8 top-1/2 -translate-y-1/2 hidden md:flex items-center justify-center w-12 h-12 bg-white dark:bg-gray-800 rounded-full border-2 border-gray-200 dark:border-gray-700 z-10">
+              <span className="text-sm font-semibold text-gray-400 dark:text-gray-500">OR</span>
             </div>
-            <div className="flex-grow border-t border-gray-700"></div>
-          </div>
 
-          {/* AI Generation Card */}
-          <div
-            onClick={() => setShowAIModal(true)}
-            className="group relative bg-gray-800 border border-gray-700 rounded-2xl p-10 min-h-[400px] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer hover:border-purple-500 hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:scale-[1.02] bg-gradient-to-br from-gray-800 via-gray-800 to-purple-900/10"
-          >
-            <Sparkles className="w-16 h-16 text-purple-500 mb-6 group-hover:rotate-12 group-hover:scale-110 transition-all duration-300 animate-pulse" />
-
-            <h3 className="text-2xl font-bold text-white mb-3">
-              Generate with AI
-            </h3>
-
-            <p className="text-base text-gray-300 text-center mb-8">
-              Describe your vision and let AI create your poster
-            </p>
-
-            <button
-              type="button"
-              className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-purple-600 hover:from-blue-600 hover:via-purple-600 hover:to-purple-700 text-white text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:brightness-110 shadow-lg flex items-center justify-center gap-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAIModal(true);
-              }}
+            <div
+              onClick={() => setShowAIModal(true)}
+              className="group relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer border-purple-300 dark:border-purple-700 hover:border-purple-400 dark:hover:border-purple-600 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20"
             >
-              <Sparkles className="w-4 h-4" />
-              Create with AI
-            </button>
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-7 h-7 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                    Generate with AI
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                    Describe your vision and let AI create it
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Powered by AI • Unlimited generations
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold rounded-lg transition-all shadow-sm group-hover:shadow-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAIModal(true);
+                  }}
+                >
+                  Create with AI
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
