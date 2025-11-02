@@ -49,42 +49,42 @@ export function CopywritingCheck({ caption, onCaptionChange }: CopywritingCheckP
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 80) return 'text-green-600 dark:text-green-400';
+    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
   };
 
   const getScoreBgColor = (score: number) => {
-    if (score >= 80) return 'bg-green-100';
-    if (score >= 60) return 'bg-yellow-100';
-    return 'bg-red-100';
+    if (score >= 80) return 'bg-green-100 dark:bg-green-900/30';
+    if (score >= 60) return 'bg-yellow-100 dark:bg-yellow-900/30';
+    return 'bg-red-100 dark:bg-red-900/30';
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white dark:bg-[#1F2937] rounded-2xl shadow-sm border border-gray-200 dark:border-[#374151] p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">AI Copywriting Check</h3>
-          <p className="text-sm text-gray-500">Get instant feedback on your caption</p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Copywriting Check</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Get instant feedback on your caption</p>
         </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-[#D1D5DB] mb-2">
             Your Caption
           </label>
           <textarea
             value={caption}
             onChange={(e) => onCaptionChange(e.target.value)}
             placeholder="Write your post caption here... Make it engaging!"
-            className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
+            className="w-full h-32 px-4 py-3 border border-gray-300 dark:border-[#374151] rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none bg-white dark:bg-[#0A0A0F] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
           <div className="flex justify-between items-center mt-2">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               {caption.length} characters • {caption.trim().split(/\s+/).filter(w => w).length} words
             </span>
           </div>
@@ -93,7 +93,7 @@ export function CopywritingCheck({ caption, onCaptionChange }: CopywritingCheckP
         <button
           onClick={analyzeCopy}
           disabled={!caption.trim() || isAnalyzing}
-          className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 disabled:from-gray-300 disabled:to-gray-400 text-white py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:shadow-none"
+          className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-700 dark:disabled:to-gray-800 text-white py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:shadow-none disabled:opacity-50"
         >
           {isAnalyzing ? (
             <>
@@ -109,9 +109,9 @@ export function CopywritingCheck({ caption, onCaptionChange }: CopywritingCheckP
         </button>
 
         {feedback && (
-          <div className="space-y-4 mt-6 pt-6 border-t border-gray-200">
+          <div className="space-y-4 mt-6 pt-6 border-t border-gray-200 dark:border-[#374151]">
             <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-gray-900">AI Feedback</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white">AI Feedback</h4>
               <div className={`px-4 py-2 rounded-lg ${getScoreBgColor(feedback.score)}`}>
                 <span className={`text-lg font-bold ${getScoreColor(feedback.score)}`}>
                   {feedback.score}/100
@@ -120,36 +120,36 @@ export function CopywritingCheck({ caption, onCaptionChange }: CopywritingCheckP
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-xs text-gray-500 mb-1">Tone</p>
-                <p className="text-sm font-semibold text-gray-900">{feedback.tone}</p>
+              <div className="bg-gray-50 dark:bg-[#0A0A0F] rounded-lg p-4 border border-gray-100 dark:border-[#374151]">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tone</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{feedback.tone}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-xs text-gray-500 mb-1">Sentiment</p>
-                <p className="text-sm font-semibold text-gray-900">{feedback.sentiment}</p>
+              <div className="bg-gray-50 dark:bg-[#0A0A0F] rounded-lg p-4 border border-gray-100 dark:border-[#374151]">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Sentiment</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{feedback.sentiment}</p>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-blue-900 mb-2">CTA Suggestion</p>
-                  <p className="text-sm text-blue-700">{feedback.ctaSuggestion}</p>
+                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">CTA Suggestion</p>
+                  <p className="text-sm text-blue-700 dark:text-blue-400">{feedback.ctaSuggestion}</p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-semibold text-gray-900">Suggestions</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">Suggestions</p>
               {feedback.suggestions.map((suggestion, index) => (
                 <div key={index} className="flex items-start gap-2">
                   {suggestion.includes('Great') ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
                   ) : (
-                    <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-orange-500 dark:text-orange-400 flex-shrink-0 mt-0.5" />
                   )}
-                  <p className="text-sm text-gray-700">{suggestion}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{suggestion}</p>
                 </div>
               ))}
             </div>
