@@ -51,123 +51,123 @@ export function Dashboard() {
 
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="mb-8 animate-fade-in-up">
+        <h1 className="text-4xl font-bold text-white mb-2">
           Welcome back, {firstName}!
         </h1>
-        <p className="text-gray-600">Here's what's happening with your social media today</p>
+        <p className="text-[#D1D5DB] text-lg">Here's what's happening with your social media today</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-[#1F2937] rounded-2xl border border-[#374151] p-6 hover:scale-105 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] transition-all animate-fade-in-up">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-[#3B82F6]/20 rounded-xl flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-[#3B82F6]" />
             </div>
-            <span className="text-sm font-medium text-blue-600">Active</span>
+            <span className="text-sm font-medium text-[#3B82F6]">Active</span>
           </div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-1">{stats.scheduledPosts}</h3>
-          <p className="text-sm text-gray-600">Scheduled Posts</p>
+          <h3 className="text-3xl font-bold text-white mb-1">{stats.scheduledPosts}</h3>
+          <p className="text-sm text-[#9CA3AF]">Scheduled Posts</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-[#1F2937] rounded-2xl border border-[#374151] p-6 hover:scale-105 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all animate-fade-in-up animation-delay-200">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-green-400" />
             </div>
-            <span className="text-sm font-medium text-green-600">Total</span>
+            <span className="text-sm font-medium text-green-400">Total</span>
           </div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-1">{stats.totalPosts}</h3>
-          <p className="text-sm text-gray-600">Total Posts</p>
+          <h3 className="text-3xl font-bold text-white mb-1">{stats.totalPosts}</h3>
+          <p className="text-sm text-[#9CA3AF]">Total Posts</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-[#1F2937] rounded-2xl border border-[#374151] p-6 hover:scale-105 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] transition-all animate-fade-in-up animation-delay-400">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-[#8B5CF6]/20 rounded-xl flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-[#8B5CF6]" />
             </div>
-            <span className="text-sm font-medium text-purple-600">AI Ready</span>
+            <span className="text-sm font-medium text-[#8B5CF6]">AI Ready</span>
           </div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-1">{stats.draftPosts}</h3>
-          <p className="text-sm text-gray-600">Draft Posts</p>
+          <h3 className="text-3xl font-bold text-white mb-1">{stats.draftPosts}</h3>
+          <p className="text-sm text-[#9CA3AF]">Draft Posts</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-[#1F2937] rounded-2xl border border-[#374151] p-6 hover:scale-105 hover:shadow-[0_0_20px_rgba(249,115,22,0.2)] transition-all animate-fade-in-up animation-delay-600">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6 text-orange-600" />
+            <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
+              <Users className="w-6 h-6 text-orange-400" />
             </div>
-            <span className="text-sm font-medium text-orange-600">Connected</span>
+            <span className="text-sm font-medium text-orange-400">Connected</span>
           </div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-1">4</h3>
-          <p className="text-sm text-gray-600">Platforms</p>
+          <h3 className="text-3xl font-bold text-white mb-1">4</h3>
+          <p className="text-sm text-[#9CA3AF]">Platforms</p>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div className="lg:col-span-2 bg-[#1F2937] rounded-2xl border border-[#374151] p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
+            <h2 className="text-2xl font-bold text-white">Quick Actions</h2>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => navigate('/dashboard/create')}
-              className="group p-6 border-2 border-gray-200 hover:border-blue-500 rounded-xl transition-all hover:shadow-lg"
+              className="group p-6 border-2 border-[#374151] hover:border-[#3B82F6] rounded-xl transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Create New Post</h3>
-              <p className="text-sm text-gray-600">Design and schedule content</p>
+              <h3 className="text-lg font-semibold text-white mb-1">Create New Post</h3>
+              <p className="text-sm text-[#9CA3AF]">Design and schedule content</p>
             </button>
 
             <button
               onClick={() => navigate('/dashboard/copywriting')}
-              className="group p-6 border-2 border-gray-200 hover:border-purple-500 rounded-xl transition-all hover:shadow-lg"
+              className="group p-6 border-2 border-[#374151] hover:border-[#8B5CF6] rounded-xl transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(139,92,246,0.3)]">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">AI Copywriting</h3>
-              <p className="text-sm text-gray-600">Optimize your captions</p>
+              <h3 className="text-lg font-semibold text-white mb-1">AI Copywriting</h3>
+              <p className="text-sm text-[#9CA3AF]">Optimize your captions</p>
             </button>
 
             <button
               onClick={() => navigate('/dashboard/analytics')}
-              className="group p-6 border-2 border-gray-200 hover:border-green-500 rounded-xl transition-all hover:shadow-lg"
+              className="group p-6 border-2 border-[#374151] hover:border-green-500 rounded-xl transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(34,197,94,0.3)]">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">View Analytics</h3>
-              <p className="text-sm text-gray-600">Track your performance</p>
+              <h3 className="text-lg font-semibold text-white mb-1">View Analytics</h3>
+              <p className="text-sm text-[#9CA3AF]">Track your performance</p>
             </button>
 
             <button
               onClick={() => navigate('/dashboard/team')}
-              className="group p-6 border-2 border-gray-200 hover:border-orange-500 rounded-xl transition-all hover:shadow-lg"
+              className="group p-6 border-2 border-[#374151] hover:border-orange-500 rounded-xl transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(249,115,22,0.2)]"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Manage Team</h3>
-              <p className="text-sm text-gray-600">Collaborate with members</p>
+              <h3 className="text-lg font-semibold text-white mb-1">Manage Team</h3>
+              <p className="text-sm text-[#9CA3AF]">Collaborate with members</p>
             </button>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-sm border border-blue-700 p-6 text-white">
+        <div className="bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-2xl border border-[#3B82F6] p-6 text-white shadow-[0_0_30px_rgba(59,130,246,0.3)]">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-xl font-bold mb-2">AI Assistant</h2>
-          <p className="text-blue-100 mb-6 text-sm leading-relaxed">
+          <h2 className="text-2xl font-bold mb-2">AI Assistant</h2>
+          <p className="text-white/80 mb-6 text-sm leading-relaxed">
             Get instant feedback on your captions, tone analysis, and CTA suggestions powered by AI.
           </p>
           <button
             onClick={() => navigate('/dashboard/copywriting')}
-            className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+            className="flex items-center gap-2 bg-white text-[#3B82F6] px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"
           >
             Try AI Assistant
             <ArrowRight className="w-4 h-4" />
@@ -176,12 +176,12 @@ export function Dashboard() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-[#1F2937] rounded-2xl border border-[#374151] p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Upcoming Schedule</h2>
+            <h2 className="text-2xl font-bold text-white">Upcoming Schedule</h2>
             <button
               onClick={() => navigate('/dashboard/schedule')}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="text-sm text-[#3B82F6] hover:text-[#8B5CF6] font-medium transition-colors"
             >
               View all
             </button>
@@ -189,28 +189,28 @@ export function Dashboard() {
 
           {stats.scheduledPosts === 0 ? (
             <div className="text-center py-12">
-              <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-600 mb-4">No scheduled posts yet</p>
+              <Clock className="w-12 h-12 text-[#374151] mx-auto mb-4" />
+              <p className="text-[#D1D5DB] mb-4">No scheduled posts yet</p>
               <button
                 onClick={() => navigate('/dashboard/create')}
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                className="text-[#3B82F6] hover:text-[#8B5CF6] font-medium text-sm transition-colors"
               >
                 Create your first post
               </button>
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-gray-500">Your scheduled posts will appear here</p>
+              <p className="text-sm text-[#9CA3AF]">Your scheduled posts will appear here</p>
             </div>
           )}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-[#1F2937] rounded-2xl border border-[#374151] p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Platform Performance</h2>
+            <h2 className="text-2xl font-bold text-white">Platform Performance</h2>
             <button
               onClick={() => navigate('/dashboard/analytics')}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="text-sm text-[#3B82F6] hover:text-[#8B5CF6] font-medium transition-colors"
             >
               View details
             </button>
@@ -223,16 +223,16 @@ export function Dashboard() {
               { name: 'Facebook', icon: '/facebook-logo.svg', bg: 'bg-white border border-gray-200' },
               { name: 'Instagram', icon: '/instagram-logo.png', bg: 'bg-white border border-gray-200' },
             ].map((platform) => (
-              <div key={platform.name} className="flex items-center justify-between">
+              <div key={platform.name} className="flex items-center justify-between p-3 bg-[#0A0A0F] rounded-xl hover:bg-[#374151]/30 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden ${platform.bg}`}>
                     <img src={platform.icon} alt={platform.name} className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-medium text-gray-900">{platform.name}</span>
+                  <span className="font-medium text-white">{platform.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-gray-900">-</p>
-                  <p className="text-xs text-gray-500">No data yet</p>
+                  <p className="text-lg font-bold text-white">-</p>
+                  <p className="text-xs text-[#9CA3AF]">No data yet</p>
                 </div>
               </div>
             ))}
