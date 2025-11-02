@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { X, Sparkles, Wand2, Loader2, RefreshCw, ChevronRight, Lightbulb } from 'lucide-react';
+import { X, Sparkles, Wand2, Loader2, RefreshCw, ChevronRight, Lightbulb, Edit3, Download } from 'lucide-react';
+import { openPixlrEditor, downloadImageForPixlr } from '../../lib/pixlr';
 
 interface AIGenerationModalProps {
   onClose: () => void;
@@ -30,6 +31,7 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showTips, setShowTips] = useState(true);
+  const [showPixlrInfo, setShowPixlrInfo] = useState(false);
 
   const handleGenerate = async () => {
     if (prompt.trim().length < 10) {
@@ -98,6 +100,20 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     if (generatedImage) {
       onGenerate(generatedImage);
     }
+  };
+
+  const handleEditInPixlr = async () => {
+    if (!generatedImage) return;
+
+    setShowPixlrInfo(true);
+
+    // Download the image for user to edit in Pixlr
+    downloadImageForPixlr(generatedImage, `ai-generated-${Date.now()}.jpg`);
+
+    // Open Pixlr editor
+    setTimeout(() => {
+      openPixlrEditor({ image: generatedImage, title: 'Edit Generated Image' });
+    }, 500);
   };
 
   const handleExampleClick = (example: string) => {
@@ -237,6 +253,21 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Your prompt:</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400 italic">"{prompt}"</p>
               </div>
+
+              {showPixlrInfo && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                  <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2">
+                    <Edit3 className="w-4 h-4" />
+                    Editing in Pixlr
+                  </h4>
+                  <div className="text-xs text-blue-800 dark:text-blue-400 space-y-1">
+                    <p>• Your image has been downloaded and Pixlr editor opened</p>
+                    <p>• Upload the downloaded image in Pixlr to edit it</p>
+                    <p>• When done, save/download from Pixlr</p>
+                    <p>• Then upload the edited image back to your post</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -260,10 +291,18 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
               <button
                 onClick={handleRegenerate}
                 disabled={isGenerating}
-                className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
                 Regenerate
+              </button>
+              <button
+                onClick={handleEditInPixlr}
+                disabled={isGenerating}
+                className="flex-1 px-4 py-2.5 border-2 border-blue-500 dark:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <Edit3 className="w-4 h-4" />
+                Edit in Pixlr
               </button>
               <button
                 onClick={handleUseImage}
