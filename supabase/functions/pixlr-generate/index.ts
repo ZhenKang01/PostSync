@@ -1,5 +1,4 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import jwt from "https://esm.sh/jsonwebtoken@9.0.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,13 +9,6 @@ const corsHeaders = {
 interface GenerateRequest {
   prompt: string;
   style: string;
-}
-
-const PIXLR_CLIENT_KEY = Deno.env.get("PIXLR_CLIENT_KEY") || "6906159977cfaad90cf4524a";
-const PIXLR_CLIENT_SECRET = Deno.env.get("PIXLR_CLIENT_SECRET") || "eb5ff1ca98cf405892322b9745eff002";
-
-function generatePixlrToken(payload: Record<string, any>): string {
-  return jwt.sign(payload, PIXLR_CLIENT_SECRET, { algorithm: "HS256" });
 }
 
 Deno.serve(async (req: Request) => {
@@ -97,21 +89,9 @@ Deno.serve(async (req: Request) => {
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
     const imageUrl = `data:image/jpeg;base64,${base64}`;
 
-    const pixlrPayload = {
-      sub: PIXLR_CLIENT_KEY,
-      mode: "embedded",
-      origin: new URL(req.url).origin,
-      settings: {
-        referrer: "PostSync",
-      },
-    };
-    const pixlrToken = generatePixlrToken(pixlrPayload);
-    console.log("Generated Pixlr token");
-
     return new Response(
       JSON.stringify({
         image_url: imageUrl,
-        pixlr_token: pixlrToken,
         success: true,
       }),
       {

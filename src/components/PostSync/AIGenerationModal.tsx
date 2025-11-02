@@ -48,11 +48,12 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-      // Call the edge function directly without authentication
+      // Call the edge function
       const response = await fetch(`${supabaseUrl}/functions/v1/pixlr-generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${anonKey}`,
           'apikey': anonKey,
         },
         body: JSON.stringify({
