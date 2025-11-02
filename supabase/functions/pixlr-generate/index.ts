@@ -50,41 +50,34 @@ Deno.serve(async (req: Request) => {
     const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}, high quality, detailed, 4k`;
     console.log("Generating image with prompt:", enhancedPrompt);
 
-    const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          inputs: enhancedPrompt,
-          parameters: { num_inference_steps: 30, guidance_scale: 7.5 },
-        }),
+    // Use Pollinations AI (free, no API key required)
+    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&nologo=true&model=flux`;
+
+    console.log("Generating image with Pollinations AI:", pollinationsUrl);
+
+    const imageResponse = await fetch(pollinationsUrl, {
+      method: "GET",
+      headers: {
+        "Accept": "image/*"
       }
-    );
-    if (!hfResponse.ok) {
-      const errorText = await hfResponse.text();
-      if (hfResponse.status === 503) {
-        return new Response(
-          JSON.stringify({
-            error: "AI model is warming up",
-            message: "The AI model is loading. Please try again in a moment.",
-            status: 503,
-          }),
-          {
-            status: 200,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
+    });
+
+    if (!imageResponse.ok) {
+      const errorText = await imageResponse.text();
       return new Response(
-        JSON.stringify({ error: "Failed to generate image", status: hfResponse.status, details: errorText }),
+        JSON.stringify({
+          error: "Failed to generate image",
+          status: imageResponse.status,
+          details: errorText
+        }),
         {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
-    const imageBlob = await hfResponse.blob();
+
+    const imageBlob = await imageResponse.blob();
     const arrayBuffer = await imageBlob.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
     const imageUrl = `data:image/jpeg;base64,${base64}`;
