@@ -1,10 +1,10 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import jwt from "https://esm.sh/jsonwebtoken";
+import jwt from "https://esm.sh/jsonwebtoken@9.0.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "content-type, authorization, x-client-info, apikey",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 interface GenerateRequest {
@@ -20,11 +20,15 @@ function generatePixlrToken(payload: Record<string, any>): string {
 }
 
 Deno.serve(async (req: Request) => {
-  console.log("Function invoked!", req.method);
-
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders
+    });
   }
+
+  console.log("Function invoked!", req.method);
 
   try {
     const body = await req.json();
