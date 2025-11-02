@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { UploadCloud, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { PlatformPreviews } from './PlatformPreviews';
 import { AIGenerationModal } from './AIGenerationModal';
+import { Toast } from '../Toast';
+import { ImageEditor } from '../ImageEditor';
 
 interface PosterUploadProps {
   uploadedImage: string | null;
@@ -14,7 +16,9 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
   const [isDragging, setIsDragging] = useState(false);
   const [uploadMethod, setUploadMethod] = useState<UploadMethod>('selection');
   const [showAIModal, setShowAIModal] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): string | null => {
@@ -22,11 +26,11 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     const maxSize = 10 * 1024 * 1024;
 
     if (!validTypes.includes(file.type)) {
-      return 'Invalid file type. Please upload JPG, PNG, or WebP images only.';
+      return 'Please upload JPG, PNG, or WebP only';
     }
 
     if (file.size > maxSize) {
-      return 'File size exceeds 10MB. Please upload a smaller image.';
+      return 'File must be under 10MB. Please compress and try again';
     }
 
     return null;
@@ -39,15 +43,24 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
-      setTimeout(() => setError(null), 5000);
       return;
     }
 
     setError(null);
+    setIsLoading(true);
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      onImageUpload(event.target?.result as string);
-      setUploadMethod('upload');
+      setTimeout(() => {
+        onImageUpload(event.target?.result as string);
+        setUploadMethod('upload');
+        setIsLoading(false);
+        setShowEditor(true);
+      }, 500);
+    };
+    reader.onerror = () => {
+      setError('Something went wrong. Please try again');
+      setIsLoading(false);
     };
     reader.readAsDataURL(file);
   };
@@ -71,15 +84,24 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
-      setTimeout(() => setError(null), 5000);
       return;
     }
 
     setError(null);
+    setIsLoading(true);
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      onImageUpload(event.target?.result as string);
-      setUploadMethod('upload');
+      setTimeout(() => {
+        onImageUpload(event.target?.result as string);
+        setUploadMethod('upload');
+        setIsLoading(false);
+        setShowEditor(true);
+      }, 500);
+    };
+    reader.onerror = () => {
+      setError('Something went wrong. Please try again');
+      setIsLoading(false);
     };
     reader.readAsDataURL(file);
   };
@@ -97,7 +119,16 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
     onImageUpload(imageUrl);
     setUploadMethod('ai');
     setShowAIModal(false);
+    setShowEditor(true);
   };
+
+  const handleEditorBack = () => {
+    setShowEditor(false);
+  };
+
+  if (showEditor && uploadedImage) {
+    return <ImageEditor imageUrl={uploadedImage} onBack={handleEditorBack} />;
+  }
 
   if (uploadedImage) {
     return (
@@ -149,13 +180,9 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
 
   return (
     <>
-      <div className="max-w-[1200px] mx-auto px-6 md:px-20 py-8 md:py-20">
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
+      {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
 
+      <div className="max-w-[1200px] mx-auto px-6 md:px-20 py-8 md:py-20">
         <div className="relative grid md:grid-cols-2 gap-8">
           {/* Upload Card */}
           <div
@@ -167,8 +194,14 @@ export function PosterUpload({ uploadedImage, onImageUpload }: PosterUploadProps
                 ? 'border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.5)] scale-[1.02]'
                 : 'border-gray-700 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:scale-[1.02]'
             }`}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => !isLoading && fileInputRef.current?.click()}
           >
+            {isLoading && (
+              <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-white font-medium">Processing image...</p>
+              </div>
+            )}
             <UploadCloud className="w-16 h-16 text-blue-500 mb-6" />
 
             <h3 className="text-2xl font-bold text-white mb-3">
