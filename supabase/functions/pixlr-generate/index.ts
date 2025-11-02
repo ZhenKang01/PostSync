@@ -12,7 +12,6 @@ interface GenerateRequest {
 }
 
 Deno.serve(async (req: Request) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       status: 200,
@@ -50,37 +49,75 @@ Deno.serve(async (req: Request) => {
     const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}, high quality, detailed, 4k`;
     console.log("Generating image with prompt:", enhancedPrompt);
 
-    // Use Pollinations AI (free, no API key required)
-    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&nologo=true&model=flux`;
+    let imageUrl: string | null = null;
+    let lastError: string | null = null;
 
-    console.log("Generating image with Pollinations AI:", pollinationsUrl);
+    try {
+      console.log("Attempting Hugging Face API...");
+      const hfResponse = await fetch(
+        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ inputs: enhancedPrompt }),
+        }
+      );
 
-    const imageResponse = await fetch(pollinationsUrl, {
-      method: "GET",
-      headers: {
-        "Accept": "image/*"
+      if (hfResponse.ok) {
+        const imageBlob = await hfResponse.blob();
+        const arrayBuffer = await imageBlob.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+        imageUrl = `data:image/jpeg;base64,${base64}`;
+        console.log("Successfully generated with Hugging Face");
+      } else {
+        lastError = `Hugging Face: ${hfResponse.status}`;
+        console.log("Hugging Face failed, trying fallback...");
       }
-    });
+    } catch (error) {
+      lastError = `Hugging Face: ${error instanceof Error ? error.message : "Unknown error"}`;
+      console.error("Hugging Face error:", error);
+    }
 
-    if (!imageResponse.ok) {
-      const errorText = await imageResponse.text();
+    if (!imageUrl) {
+      try {
+        console.log("Attempting Pollinations AI...");
+        const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&nologo=true&model=flux`;
+
+        const pollinationsResponse = await fetch(pollinationsUrl, {
+          method: "GET",
+          headers: { "Accept": "image/*" }
+        });
+
+        if (pollinationsResponse.ok) {
+          const imageBlob = await pollinationsResponse.blob();
+          const arrayBuffer = await imageBlob.arrayBuffer();
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+          imageUrl = `data:image/jpeg;base64,${base64}`;
+          console.log("Successfully generated with Pollinations AI");
+        } else {
+          lastError = `Pollinations: ${pollinationsResponse.status}`;
+        }
+      } catch (error) {
+        lastError = `Pollinations: ${error instanceof Error ? error.message : "Unknown error"}`;
+        console.error("Pollinations error:", error);
+      }
+    }
+
+    if (!imageUrl) {
       return new Response(
         JSON.stringify({
-          error: "Failed to generate image",
-          status: imageResponse.status,
-          details: errorText
+          error: "All AI services failed",
+          details: lastError,
+          message: "Unable to generate image at this time. Please try again later."
         }),
         {
-          status: 200,
+          status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
-
-    const imageBlob = await imageResponse.blob();
-    const arrayBuffer = await imageBlob.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-    const imageUrl = `data:image/jpeg;base64,${base64}`;
 
     return new Response(
       JSON.stringify({
