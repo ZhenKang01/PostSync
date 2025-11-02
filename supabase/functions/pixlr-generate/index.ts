@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import jwt from "https://esm.sh/jsonwebtoken";  // or your preferred JWT library
+import jwt from "https://esm.sh/jsonwebtoken";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,12 +12,10 @@ interface GenerateRequest {
   style: string;
 }
 
-// Your Pixlr credentials (keep secrets server-side, not exposed to client)
-const PIXLR_CLIENT_KEY = Deno.env.get("6906159977cfaad90cf4524a") || "";
-const PIXLR_CLIENT_SECRET = Deno.env.get("eb5ff1ca98cf405892322b9745eff002") || "";
+const PIXLR_CLIENT_KEY = Deno.env.get("PIXLR_CLIENT_KEY") || "6906159977cfaad90cf4524a";
+const PIXLR_CLIENT_SECRET = Deno.env.get("PIXLR_CLIENT_SECRET") || "eb5ff1ca98cf405892322b9745eff002";
 
 function generatePixlrToken(payload: Record<string, any>): string {
-  // Use HS256 (or whichever algorithm allowed) for signing; ensure secret is safe
   return jwt.sign(payload, PIXLR_CLIENT_SECRET, { algorithm: "HS256" });
 }
 
@@ -56,7 +54,6 @@ Deno.serve(async (req: Request) => {
     const enhancedPrompt = `${prompt}, ${stylePrompts[style] || "beautiful style"}, high quality, detailed, 4k`;
     console.log("Generating image with prompt:", enhancedPrompt);
 
-    // --- your Hugging Face generation code here ---
     const hfResponse = await fetch(
       "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
       {
@@ -96,18 +93,16 @@ Deno.serve(async (req: Request) => {
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
     const imageUrl = `data:image/jpeg;base64,${base64}`;
 
-    // --- Pixlr token generation for embedded mode ---
     const pixlrPayload = {
       sub: PIXLR_CLIENT_KEY,
       mode: "embedded",
-      origin: "https://yourwebsite.com",   // <-- replace with your domain
+      origin: new URL(req.url).origin,
       settings: {
-        referrer: "MyAppName",
-        // optionally other settings like accent, workspace, etc.
+        referrer: "PostSync",
       },
     };
     const pixlrToken = generatePixlrToken(pixlrPayload);
-    console.log("Generated Pixlr token:", pixlrToken);
+    console.log("Generated Pixlr token");
 
     return new Response(
       JSON.stringify({
