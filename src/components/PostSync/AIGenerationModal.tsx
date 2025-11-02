@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { X, Sparkles, Wand2, Loader2, RefreshCw, ChevronRight, Lightbulb } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
 
 interface AIGenerationModalProps {
   onClose: () => void;
@@ -46,31 +45,32 @@ export function AIGenerationModal({ onClose, onGenerate }: AIGenerationModalProp
     setIsGenerating(true);
 
     try {
-      // Create a non-authenticated client for public function access
-      const publicClient = createClient(
-        import.meta.env.VITE_SUPABASE_URL,
-        import.meta.env.VITE_SUPABASE_ANON_KEY,
-        {
-          auth: {
-            persistSession: false,
-            autoRefreshToken: false,
-          },
-        }
-      );
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-      const { data, error } = await publicClient.functions.invoke('pixlr-generate', {
-        body: {
+      // Call the edge function directly without authentication
+      const response = await fetch(`${supabaseUrl}/functions/v1/pixlr-generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': anonKey,
+        },
+        body: JSON.stringify({
           prompt: prompt.trim(),
           style: selectedStyle,
-        },
+        }),
       });
 
-      console.log('Received response from API:', data, 'Error:', error);
+      console.log('Response status:', response.status);
 
-      if (error) {
-        console.error('API error:', error);
-        throw new Error(error.message || 'Failed to generate image');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`Failed to generate image: ${response.status}`);
       }
+
+      const data = await response.json();
+      console.log('Received response from API:', data);
 
       if (data.image_url || data.url || data.output_url || data.result) {
         const imageUrl = data.image_url || data.url || data.output_url || data.result;
